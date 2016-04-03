@@ -2,6 +2,7 @@ module Edu
   class UndirectedGraph
     def initialize
       @adjacency_list = {}
+      @vertices = SortedSet.new
     end
 
     def dfs
@@ -14,10 +15,17 @@ module Edu
     end
 
     def add_edge(v1, v2)
+      @vertices.add(v1)
+      @vertices.add(v2)
+
       pair = [v1, v2].sort
-      @adjacency_list[pair[0]] ||= Set.new
+      @adjacency_list[pair[0]] ||= SortedSet.new
       @adjacency_list[pair[0]].add(pair[1])
       @dfs = nil
+    end
+
+    def each_vertex
+      @vertices.each
     end
 
     private
