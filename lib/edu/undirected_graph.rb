@@ -2,7 +2,6 @@ module Edu
   class UndirectedGraph
     def initialize
       @adjacency_list = {}
-      @vertices = SortedSet.new
     end
 
     def dfs
@@ -15,17 +14,24 @@ module Edu
     end
 
     def add_edge(v1, v2)
-      @vertices.add(v1)
-      @vertices.add(v2)
-
       pair = [v1, v2].sort
-      @adjacency_list[pair[0]] ||= SortedSet.new
-      @adjacency_list[pair[0]].add(pair[1])
+      @adjacency_list[pair.first] ||= SortedSet.new
+      @adjacency_list[pair.last] ||= SortedSet.new
+      @adjacency_list[pair.first].add(pair.last)
       @dfs = nil
     end
 
     def each_vertex
-      @vertices.each
+      @adjacency_list.keys.sort.each
+    end
+
+    def each_adjacent(vertex)
+      Enumerator.new do |yielder|
+        @adjacency_list.select { |k, v| k < vertex && v.include?(vertex) }.sort_by(&:first).each do |k, v|
+          yielder.yield k
+        end
+        @adjacency_list[vertex].each { |v| yielder.yield v }
+      end.lazy
     end
 
     private
