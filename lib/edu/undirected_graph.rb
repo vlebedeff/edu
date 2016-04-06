@@ -26,12 +26,11 @@ module Edu
     end
 
     def each_adjacent(vertex)
-      Enumerator.new do |yielder|
-        @adjacency_list.select { |k, v| k < vertex && v.include?(vertex) }.sort_by(&:first).each do |k, v|
-          yielder.yield k
-        end
-        @adjacency_list[vertex].each { |v| yielder.yield v }
-      end.lazy
+      return to_enum(:each_adjacent, vertex) unless block_given?
+      @adjacency_list.select { |k, v| k < vertex && v.include?(vertex) }.sort_by(&:first).each do |k, v|
+        yield k
+      end
+      @adjacency_list[vertex].each { |v| yield v }
     end
 
     private
@@ -41,19 +40,9 @@ module Edu
         info = { vertex: vertex, pre: @clock += 1 }
         @dfs << info
 
-        relations_for(vertex).sort.each { |rel| explore(rel) }
+        each_adjacent(vertex) { |adj| explore(adj) }
 
         info[:post] = @clock += 1
-      end
-    end
-
-    def relations_for(vertex)
-      @adjacency_list.each_with_object(Set.new) do |adjacency, relations|
-        if adjacency.first == vertex
-          relations.merge(adjacency.last)
-        elsif adjacency.last.include?(vertex)
-          relations << adjacency.first
-        end
       end
     end
 
