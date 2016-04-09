@@ -2,18 +2,7 @@ require 'spec_helper'
 
 module Edu
   describe UndirectedGraph do
-    before do
-      subject.add_edge('A', 'B')
-      subject.add_edge('A', 'E')
-      subject.add_edge('B', 'E')
-      subject.add_edge('B', 'C')
-      subject.add_edge('E', 'F')
-      subject.add_edge('C', 'F')
-      subject.add_edge('F', 'I')
-      subject.add_edge('D', 'G')
-      subject.add_edge('D', 'H')
-      subject.add_edge('G', 'H')
-    end
+    subject { build(:graph_3_1) }
 
     specify '#each_vertex' do
       expect(subject.each_vertex.to_a).to eq(%w(A B C D E F G H I))
