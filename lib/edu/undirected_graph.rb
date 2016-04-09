@@ -4,15 +4,6 @@ module Edu
       @adjacency_list = {}
     end
 
-    def dfs
-      unless @dfs
-        @clock = 0
-        @dfs = []
-        @adjacency_list.keys.sort.each { |k| explore(k) }
-      end
-      @dfs
-    end
-
     def add_edge(v1, v2)
       pair = [v1, v2].sort
       @adjacency_list[pair.first] ||= SortedSet.new
@@ -22,7 +13,9 @@ module Edu
     end
 
     def each_vertex
-      @adjacency_list.keys.sort.each
+      vertices = @adjacency_list.keys.sort.each
+      return vertices unless block_given?
+      vertices.each { |vertex| yield vertex }
     end
 
     def each_adjacent(vertex)
@@ -31,26 +24,6 @@ module Edu
         yield k
       end
       @adjacency_list[vertex].each { |v| yield v }
-    end
-
-    private
-
-    def explore(vertex)
-      if unexplored?(vertex)
-        info = { vertex: vertex, pre: @clock += 1 }
-        @dfs << info
-
-        each_adjacent(vertex) { |adj| explore(adj) }
-
-        info[:post] = @clock += 1
-      end
-    end
-
-    def unexplored?(vertex)
-      @dfs.each do |step|
-        return false if step[:vertex] == vertex
-      end
-      true
     end
   end
 end
